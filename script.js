@@ -16,8 +16,10 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
 
-// ── Moderator password (client-side only — change before going public) ─────────
+// ── Moderator settings ────────────────────────────────────────────────────────
 const MODERATOR_PASSWORD = "neighbourhood2026";
+// Accounts authorized to access moderator mode. Add moderator email addresses here.
+const MODERATOR_EMAILS = ["yashasveepatel28@gmail.com"];
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const THEME_KEY       = "nhb-theme";
@@ -412,12 +414,30 @@ sortSelect.addEventListener("change", renderPosts);
 
 function setModeratorMode(enabled) {
   moderatorMode = enabled;
+  if (currentAccount) {
+    try {
+      if (enabled) {
+        sessionStorage.setItem("nhb_mod_" + currentAccount.uid, "true");
+      } else {
+        sessionStorage.removeItem("nhb_mod_" + currentAccount.uid);
+      }
+    } catch (_) {}
+  }
   moderatorPanel.classList.toggle("hidden", !enabled);
   document.getElementById("moderatorButton").classList.toggle("moderator-active", enabled);
   renderPosts();
 }
 
 document.getElementById("moderatorButton").addEventListener("click", () => {
+  if (!currentAccount) {
+    showToast("Please sign in to your account first.");
+    openAuth("login");
+    return;
+  }
+  if (MODERATOR_EMAILS.length > 0 && !MODERATOR_EMAILS.map(e => e.toLowerCase()).includes((currentAccount.email || "").toLowerCase())) {
+    showToast("Your account is not authorized for moderator access.");
+    return;
+  }
   if (moderatorMode) {
     setModeratorMode(false);
     showToast("Moderator mode ended.");
@@ -427,18 +447,30 @@ document.getElementById("moderatorButton").addEventListener("click", () => {
     moderatorDialog.showModal();
   }
 });
+
 document.getElementById("exitModerator").addEventListener("click", () => {
   setModeratorMode(false);
   showToast("Moderator mode ended.");
 });
+
 moderatorForm.addEventListener("submit", ev => {
   ev.preventDefault();
-  const key       = document.getElementById("moderatorKey").value;
   const errorText = document.getElementById("moderatorError");
+  if (!currentAccount) {
+    errorText.textContent = "Please sign in to your account first.";
+    errorText.classList.remove("hidden");
+    return;
+  }
+  if (MODERATOR_EMAILS.length > 0 && !MODERATOR_EMAILS.map(e => e.toLowerCase()).includes((currentAccount.email || "").toLowerCase())) {
+    errorText.textContent = "Your account (" + currentAccount.email + ") is not authorized as a moderator.";
+    errorText.classList.remove("hidden");
+    return;
+  }
+  const key = document.getElementById("moderatorKey").value;
   if (key === MODERATOR_PASSWORD) {
     setModeratorMode(true);
     moderatorDialog.close();
-    showToast("Moderator access verified.");
+    showToast("Moderator access verified for " + (currentAccount.name || currentAccount.email) + ".");
   } else {
     errorText.textContent = "That moderator key is not correct.";
     errorText.classList.remove("hidden");
@@ -524,6 +556,10 @@ document.getElementById("showSignup")?.addEventListener("click", () => setAuthMo
 document.getElementById("accountButton").addEventListener("click", async () => {
   if (!currentAccount) return openAuth("login");
   try {
+    if (currentAccount) {
+      try { sessionStorage.removeItem("nhb_mod_" + currentAccount.uid); } catch (_) {}
+    }
+    setModeratorMode(false);
     await auth.signOut();
     try { sessionStorage.removeItem("nhb_guest"); } catch (_) {}
     showToast("You have been logged out.");
@@ -569,8 +605,13 @@ auth.onAuthStateChanged(user => {
   if (user) {
     currentAccount = { uid: user.uid, name: user.displayName || user.email, email: user.email };
     hideAuthGate();
+    // Only enable moderator mode if THIS specific account has verified moderator access in this session
+    let isMod = false;
+    try { isMod = sessionStorage.getItem("nhb_mod_" + user.uid) === "true"; } catch (_) {}
+    setModeratorMode(isMod);
   } else {
     currentAccount = null;
+    setModeratorMode(false); // Always revoke moderator privileges on logout
     let isGuest = false;
     try { isGuest = sessionStorage.getItem("nhb_guest") === "true"; } catch (_) {}
     if (isGuest) {
