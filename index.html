@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#20231f">
+  <meta name="description" content="A modern neighbourhood community board to share updates, ask for help and connect with neighbours.">
+  <title>Neighbourhood Help Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#home" aria-label="Neighbourhood Help Board home">
+        <span class="brand-mark"><span></span><span></span><span></span><span></span></span>
+        <span>Neighbourhood <span>Help Board</span></span>
+      </a>
+      <div class="sidebar-label">WORKSPACE</div>
+      <nav class="side-nav" aria-label="Main navigation">
+        <a class="nav-link active" href="#home"><span class="nav-icon">⌂</span> Overview <span class="nav-dot"></span></a>
+        <a class="nav-link" href="#create"><span class="nav-icon">＋</span> Create a post</a>
+        <a class="nav-link" href="#feed"><span class="nav-icon">▤</span> Community feed</a>
+      </nav>
+      <div class="sidebar-label category-label">EXPLORE TOPICS</div>
+      <div class="topic-list">
+        <button class="topic-button" data-topic="All"><span class="topic-dot dot-all"></span> All updates</button>
+        <button class="topic-button" data-topic="Help Needed"><span class="topic-dot dot-help"></span> Help needed</button>
+        <button class="topic-button" data-topic="Announcement"><span class="topic-dot dot-news"></span> Announcements</button>
+        <button class="topic-button" data-topic="Lost & Found"><span class="topic-dot dot-lost"></span> Lost &amp; found</button>
+        <button class="topic-button" data-topic="Event"><span class="topic-dot dot-event"></span> Local events</button>
+      </div>
+      <div class="sidebar-bottom">
+        <div class="side-note">
+          <div class="note-spark">✳</div>
+          <strong>Neighbours helping<br>neighbours.</strong>
+          <p>Local updates, shared by the people who live here.</p>
+        </div>
+        <div class="profile-row">
+          <div class="profile-avatar">CG</div>
+          <div><strong>Community space</strong><small>Neighbourhood board</small></div>
+          <span class="online-dot"></span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content" id="home">
+      <header class="topbar">
+        <div class="mobile-brand">
+          <span class="brand-mark small-mark"><span></span><span></span><span></span><span></span></span>
+          <strong>Neighbourhood Help Board</strong>
+        </div>
+        <div class="breadcrumb"><span>Community</span><span class="crumb-slash">/</span><strong>Overview</strong></div>
+        <div class="topbar-actions">
+          <span class="connection-pill"><span class="status-dot"></span><span id="connectionText">Connecting…</span></span>
+          <button class="icon-button" id="themeButton" aria-label="Switch colour theme" title="Switch theme">☼</button>
+          <button class="button button-secondary account-button" id="accountButton" type="button">Sign in / Create account</button><button class="avatar-button" id="moderatorButton" title="Moderator sign-in" aria-label="Moderator sign-in">M</button>
+        </div>
+      </header>
+
+      <div class="page-wrap">
+        <section class="welcome-row">
+          <div>
+            <div class="overline"><span class="overline-line"></span> A COMMUNITY BOARD FOR EVERYDAY LIFE</div>
+            <h1>A little help goes<br>a <em>long way.</em></h1>
+            <p class="welcome-copy">Post a local notice, ask a neighbour a question, or share something useful happening nearby.</p>
+            <a class="button button-primary" href="#create">Share something <span>↗</span></a>
+          </div>
+          <div class="hero-illustration" aria-label="Illustration of connected neighbourhood homes" role="img">
+            <div class="sun-disc"></div>
+            <div class="hero-orbit orbit-a"></div><div class="hero-orbit orbit-b"></div>
+            <div class="house house-back"><span class="roof"></span><span class="house-body"><i></i><b></b></span></div>
+            <div class="house house-front"><span class="roof"></span><span class="house-body"><i></i><b></b><u></u></span></div>
+            <div class="hero-bubble bubble-heart">♡</div>
+            <div class="hero-bubble bubble-spark">✳</div>
+            <div class="hero-bubble bubble-chat">•••</div>
+            <div class="ground-line"></div>
+          </div>
+          <div class="hero-stamp"><span>✳</span><span>BETTER<br>TOGETHER</span></div>
+        </section>
+
+        <section class="metrics-grid" aria-label="Community activity">
+          <article class="metric-card metric-ink">
+            <div class="metric-top"><span>Community posts</span><span class="metric-icon">↗</span></div>
+            <div class="metric-value" id="postCount">—</div>
+            <div class="metric-foot"><span class="metric-bar"><i style="width:68%"></i></span><span>shared updates</span></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span>Neighbour support</span><span class="metric-icon coral">♡</span></div>
+            <div class="metric-value" id="voteCount">—</div>
+            <div class="metric-foot"><span class="metric-caption">Upvotes across the board</span></div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-top"><span>Conversations</span><span class="metric-icon mint">↳</span></div>
+            <div class="metric-value" id="commentCount">—</div>
+            <div class="metric-foot"><span class="metric-caption">Comments from neighbours</span></div>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <div class="composer-panel panel" id="create">
+            <div class="section-kicker">START A CONVERSATION <span>01 / SHARE</span></div>
+            <h2>What's happening?</h2>
+            <p class="section-subtitle">A question, a helpful tip, or something worth celebrating. Sign in first so neighbours can participate through an account.</p>
+            <form id="postForm">
+              <div class="field-row">
+                <label class="field">Posting as
+                  <input id="author" name="author" maxlength="40" placeholder="Sign in to post" readonly required>
+                </label>
+                <label class="field">Topic
+                  <select id="category" name="category" required>
+                    <option value="General">General update</option>
+                    <option value="Help Needed">Help needed</option>
+                    <option value="Announcement">Announcement</option>
+                    <option value="Lost & Found">Lost &amp; found</option>
+                    <option value="Event">Local event</option>
+                  </select>
+                </label>
+              </div>
+              <label class="field">Give it a headline
+                <input id="postTitle" name="postTitle" maxlength="100" placeholder="A short, clear title" required>
+              </label>
+              <label class="field">Tell the community a little more
+                <textarea id="postContent" name="postContent" rows="4" maxlength="1000" placeholder="What's going on? How can neighbours help?" required></textarea>
+              </label>
+              <div class="composer-footer"><span class="kind-reminder"><span>✳</span> Kindness belongs here.</span><button class="button button-primary" type="submit">Publish post <span>↗</span></button></div>
+            </form>
+          </div>
+
+          <aside class="community-aside">
+            <div class="aside-card welcome-card">
+              <div class="aside-icon">✳</div>
+              <div class="section-kicker">THE COMMON GROUND</div>
+              <h3>Good to know. Good to share.</h3>
+              <p>From a lost set of keys to a weekend clean-up, this is a place to keep one another in the loop.</p>
+              <div class="mini-people"><span>Y</span><span>A</span><span>P</span><span>+</span><small>One post can start a lot.</small></div>
+            </div>
+            <div class="aside-card safety-card">
+              <div class="safety-symbol">⌑</div>
+              <div><strong>Keep it neighbourly</strong><p>Be respectful. Protect personal details. If something feels unsafe, tell a trusted community moderator.</p></div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="feed-section" id="feed">
+          <div class="feed-heading">
+            <div><div class="section-kicker">FROM AROUND THE BLOCK <span>02 / DISCOVER</span></div><h2>Community board <span class="live-label"><i></i> LIVE FEED</span></h2><p class="section-subtitle">Recent posts from people in your community.</p></div>
+            <div class="feed-tools">
+              <label class="search-box"><span>⌕</span><input type="search" id="searchInput" placeholder="Search posts…" aria-label="Search posts"></label>
+              <label class="sr-only" for="sortSelect">Sort posts</label>
+              <select id="sortSelect" class="sort-select"><option value="newest">Newest first</option><option value="popular">Most upvoted</option><option value="oldest">Oldest first</option></select>
+            </div>
+          </div>
+          <div class="filter-chips" id="filterChips">
+            <button class="filter-chip active" data-topic="All">Everything</button>
+            <button class="filter-chip" data-topic="Help Needed">Need a hand</button>
+            <button class="filter-chip" data-topic="Announcement">Notices</button>
+            <button class="filter-chip" data-topic="Lost & Found">Lost &amp; found</button>
+            <button class="filter-chip" data-topic="Event">Events</button>
+          </div>
+          <div class="moderator-banner hidden" id="moderatorPanel">
+            <div><strong>Moderator tools are enabled</strong><p>You can remove posts that violate community guidelines.</p></div>
+            <button class="text-button" id="exitModerator">Exit moderator mode ×</button>
+          </div>
+          <div class="posts-grid" id="postsContainer" aria-live="polite"></div>
+          <div class="empty-state hidden" id="emptyState"><div class="empty-art">⌂</div><h3>It's quiet around here.</h3><p>No posts match this view yet. Start a conversation and be the first.</p><a href="#create" class="button button-primary">Create a post ↗</a></div>
+          <div class="feed-bottom"><span>Made for neighbours, by neighbours.</span><span id="feedCount">Showing 0 posts</span></div>
+        </section>
+
+        <footer class="footer"><a class="brand footer-brand" href="#home"><span class="brand-mark"><span></span><span></span><span></span><span></span></span><span>Neighbourhood <span>Help Board</span></span></a><p>A more connected neighbourhood starts with one small act.</p><a href="#home" class="back-top">Back to top ↑</a></footer>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="modal" id="authDialog" aria-labelledby="authTitle">
+    <form method="dialog" class="modal-close-form"><button class="modal-close" aria-label="Close dialog">×</button></form>
+    <div class="modal-mark">⌂</div><div class="section-kicker">YOUR COMMUNITY ACCOUNT</div>
+    <h2 id="authTitle">Welcome to the neighbourhood</h2><p id="authIntro">Sign in to post updates, comment and upvote using your account.</p>
+    <div class="auth-tabs"><button type="button" class="auth-tab active" id="showLogin">Log in</button><button type="button" class="auth-tab" id="showSignup">Create account</button></div>
+    <form id="authForm">
+      <label class="field hidden" id="authNameWrap">Your name<input id="authName" name="name" maxlength="40" autocomplete="name" placeholder="Your display name"></label>
+      <label class="field">Email address<input id="authEmail" name="email" type="email" maxlength="254" autocomplete="email" required placeholder="you@example.com"></label>
+      <label class="field">Password<input id="authPassword" name="password" type="password" minlength="10" autocomplete="current-password" required placeholder="At least 10 characters"></label>
+      <p class="form-error hidden" id="authError" role="alert"></p>
+      <button class="button button-primary modal-submit" id="authSubmit" type="submit">Log in ↗</button>
+    </form>
+    <small class="modal-note">Use a unique password. Accounts are stored by this project's server. Email verification is not configured in this demo.</small>
+  </dialog>
+
+  <dialog class="modal" id="moderatorDialog">
+    <form method="dialog" class="modal-close-form"><button class="modal-close" aria-label="Close dialog">×</button></form>
+    <div class="modal-mark">⌑</div><div class="section-kicker">COMMUNITY SAFETY</div>
+    <h2>Moderator sign-in</h2><p>Enter the moderator key configured by the project administrator.</p>
+    <form id="moderatorForm"><label class="field">Moderator key<input id="moderatorKey" type="password" autocomplete="current-password" required placeholder="Enter moderator key"></label><p class="form-error hidden" id="moderatorError"></p><button class="button button-primary modal-submit" type="submit">Verify access ↗</button></form>
+    <small class="modal-note">For a real deployment, keep your moderator key private and configure it on the server.</small>
+  </dialog>
+</body>
+</html>
