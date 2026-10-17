@@ -501,6 +501,7 @@ if (gateForm) {
                                                   ? "Email or password is incorrect." :
         e.code === "auth/weak-password"          ? "Use at least 6 characters for your password." :
         e.code === "auth/invalid-email"          ? "Please enter a valid email address." :
+        e.code === "auth/operation-not-allowed"  ? "Email/Password sign-in is disabled in your Firebase Console. Please enable it under Authentication > Sign-in method." :
         e.message || "Could not sign you in.";
       if (gateError) {
         gateError.textContent = msg;
@@ -556,6 +557,7 @@ document.getElementById("authForm")?.addEventListener("submit", async ev => {
       e.code === "auth/wrong-password" || e.code === "auth/user-not-found"
         || e.code === "auth/invalid-credential"                    ? "Email or password is incorrect." :
       e.code === "auth/weak-password"                              ? "Use at least 6 characters for your password." :
+      e.code === "auth/operation-not-allowed"                      ? "Email/Password sign-in is disabled in your Firebase Console. Please enable it under Authentication > Sign-in method." :
       e.message || "Could not sign you in.";
     errorText.textContent = msg;
     errorText.classList.remove("hidden");
