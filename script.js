@@ -17,7 +17,7 @@ const auth = firebase.auth();
 const db   = firebase.database();
 
 // ── Moderator password (client-side only — change before going public) ─────────
-const MODERATOR_PASSWORD = "neighbourhood-mod-2024";
+const MODERATOR_PASSWORD = "neighbourhood2026";
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const THEME_KEY       = "nhb-theme";
