@@ -32,6 +32,24 @@ const moderatorForm   = document.getElementById("moderatorForm");
 const moderatorPanel  = document.getElementById("moderatorPanel");
 const authDialog      = document.getElementById("authDialog");
 
+// Auth Gate (Greeting Screen) refs
+const authGate        = document.getElementById("authGate");
+const gateCloseBtn    = document.getElementById("gateCloseBtn");
+const gateTabLogin    = document.getElementById("gateTabLogin");
+const gateTabSignup   = document.getElementById("gateTabSignup");
+const gateForm        = document.getElementById("gateForm");
+const gateNameField   = document.getElementById("gateNameField");
+const gateName        = document.getElementById("gateName");
+const gateEmail       = document.getElementById("gateEmail");
+const gatePassword    = document.getElementById("gatePassword");
+const gateError       = document.getElementById("gateError");
+const gateSubmitBtn   = document.getElementById("gateSubmitBtn");
+const gateSubmitText  = document.getElementById("gateSubmitText");
+const gateGuestBtn    = document.getElementById("gateGuestBtn");
+const gateThemeBtn    = document.getElementById("gateThemeBtn");
+const gateTitle       = document.getElementById("gateTitle");
+const gateSubtitle    = document.getElementById("gateSubtitle");
+
 // ── App state ─────────────────────────────────────────────────────────────────
 let posts         = [];
 let postsSnapshot = {};   // raw RTDB posts object
@@ -40,6 +58,7 @@ let selectedTopic = "All";
 let moderatorMode = false;
 let currentAccount = null; // { uid, name, email }
 let authMode      = "login";
+let gateMode      = "login";
 let toastTimer;
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
@@ -92,12 +111,52 @@ function buildPosts() {
   });
 }
 
-// ── Auth UI ───────────────────────────────────────────────────────────────────
+// ── Auth UI & Gate ────────────────────────────────────────────────────────────
+
+function showAuthGate(canClose = false) {
+  if (!authGate) return;
+  authGate.classList.remove("hidden");
+  if (gateCloseBtn) {
+    gateCloseBtn.classList.toggle("hidden", !canClose);
+  }
+  if (gateError) gateError.classList.add("hidden");
+}
+
+function hideAuthGate() {
+  if (authGate) authGate.classList.add("hidden");
+}
+
+function setGateAuthMode(mode) {
+  gateMode = mode;
+  const isSignup = mode === "signup";
+  if (gateTitle) {
+    gateTitle.textContent = isSignup ? "Join your neighbourhood" : "Welcome to the neighbourhood";
+  }
+  if (gateSubtitle) {
+    gateSubtitle.textContent = isSignup
+      ? "Create an account to share updates and join conversations."
+      : "Sign in or create an account to start sharing and connecting.";
+  }
+  if (gateNameField) {
+    gateNameField.classList.toggle("hidden", !isSignup);
+  }
+  if (gateName) {
+    gateName.required = isSignup;
+  }
+  if (gatePassword) {
+    gatePassword.autocomplete = isSignup ? "new-password" : "current-password";
+  }
+  if (gateSubmitText) {
+    gateSubmitText.textContent = isSignup ? "Create account" : "Log in";
+  }
+  if (gateTabLogin) gateTabLogin.classList.toggle("active", !isSignup);
+  if (gateTabSignup) gateTabSignup.classList.toggle("active", isSignup);
+  if (gateError) gateError.classList.add("hidden");
+}
 
 function openAuth(mode = "login") {
-  setAuthMode(mode);
-  document.getElementById("authError").classList.add("hidden");
-  if (!authDialog.open) authDialog.showModal();
+  setGateAuthMode(mode);
+  showAuthGate(true); // Allow closing since user is already exploring
 }
 
 function setAuthMode(mode) {
@@ -386,18 +445,95 @@ moderatorForm.addEventListener("submit", ev => {
   }
 });
 
-// ── Firebase Auth ─────────────────────────────────────────────────────────────
+// ── Firebase Auth & Gate Event Listeners ─────────────────────────────────────
 
-document.getElementById("showLogin").addEventListener("click",  () => setAuthMode("login"));
-document.getElementById("showSignup").addEventListener("click", () => setAuthMode("signup"));
+// Gate tabs
+if (gateTabLogin)  gateTabLogin.addEventListener("click",  () => setGateAuthMode("login"));
+if (gateTabSignup) gateTabSignup.addEventListener("click", () => setGateAuthMode("signup"));
 
+// Continue as guest
+if (gateGuestBtn) {
+  gateGuestBtn.addEventListener("click", () => {
+    try { sessionStorage.setItem("nhb_guest", "true"); } catch (_) {}
+    hideAuthGate();
+    showToast("Browsing as guest. Sign in anytime to post or upvote.");
+  });
+}
+
+// Gate manual dismiss
+if (gateCloseBtn) {
+  gateCloseBtn.addEventListener("click", () => {
+    hideAuthGate();
+  });
+}
+
+// Gate form submit
+if (gateForm) {
+  gateForm.addEventListener("submit", async ev => {
+    ev.preventDefault();
+    if (gateError) gateError.classList.add("hidden");
+    const name     = gateName ? gateName.value.trim() : "";
+    const email    = gateEmail ? gateEmail.value.trim() : "";
+    const password = gatePassword ? gatePassword.value : "";
+
+    if (gateSubmitBtn) {
+      gateSubmitBtn.disabled = true;
+      gateSubmitBtn.style.opacity = "0.7";
+    }
+
+    try {
+      if (gateMode === "signup") {
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        if (name) {
+          await cred.user.updateProfile({ displayName: name });
+        }
+      } else {
+        await auth.signInWithEmailAndPassword(email, password);
+      }
+      try { sessionStorage.removeItem("nhb_guest"); } catch (_) {}
+      hideAuthGate();
+      gateForm.reset();
+      showToast(gateMode === "signup" ? "Account created! Welcome to the neighbourhood." : "You are now signed in.");
+    } catch (e) {
+      const msg =
+        e.code === "auth/email-already-in-use"    ? "An account with this email already exists." :
+        e.code === "auth/wrong-password" || e.code === "auth/user-not-found" || e.code === "auth/invalid-credential"
+                                                  ? "Email or password is incorrect." :
+        e.code === "auth/weak-password"          ? "Use at least 6 characters for your password." :
+        e.code === "auth/invalid-email"          ? "Please enter a valid email address." :
+        e.message || "Could not sign you in.";
+      if (gateError) {
+        gateError.textContent = msg;
+        gateError.classList.remove("hidden");
+      }
+    } finally {
+      if (gateSubmitBtn) {
+        gateSubmitBtn.disabled = false;
+        gateSubmitBtn.style.opacity = "";
+      }
+    }
+  });
+}
+
+// Modal dialog tabs (kept for backward compatibility)
+document.getElementById("showLogin")?.addEventListener("click",  () => setAuthMode("login"));
+document.getElementById("showSignup")?.addEventListener("click", () => setAuthMode("signup"));
+
+// Account button in topbar
 document.getElementById("accountButton").addEventListener("click", async () => {
   if (!currentAccount) return openAuth("login");
-  try { await auth.signOut(); showToast("You have been logged out."); }
-  catch (e) { showToast(e.message); }
+  try {
+    await auth.signOut();
+    try { sessionStorage.removeItem("nhb_guest"); } catch (_) {}
+    showToast("You have been logged out.");
+    showAuthGate(false); // Greet the user again with the sign-in screen
+  } catch (e) {
+    showToast(e.message);
+  }
 });
 
-document.getElementById("authForm").addEventListener("submit", async ev => {
+// Modal dialog form submit (kept for fallback)
+document.getElementById("authForm")?.addEventListener("submit", async ev => {
   ev.preventDefault();
   const errorText = document.getElementById("authError");
   errorText.classList.add("hidden");
@@ -430,8 +566,16 @@ document.getElementById("authForm").addEventListener("submit", async ev => {
 auth.onAuthStateChanged(user => {
   if (user) {
     currentAccount = { uid: user.uid, name: user.displayName || user.email, email: user.email };
+    hideAuthGate();
   } else {
     currentAccount = null;
+    let isGuest = false;
+    try { isGuest = sessionStorage.getItem("nhb_guest") === "true"; } catch (_) {}
+    if (isGuest) {
+      hideAuthGate();
+    } else {
+      showAuthGate(false); // First arrival greeting gate
+    }
   }
   updateAccountUI();
   buildPosts();   // recalculate userVoted with new identity
@@ -440,21 +584,32 @@ auth.onAuthStateChanged(user => {
 
 // ── Theme ─────────────────────────────────────────────────────────────────────
 
-document.getElementById("themeButton").addEventListener("click", () => {
-  const dark = !document.body.classList.contains("dark-mode");
+function applyTheme(dark) {
   document.body.classList.toggle("dark-mode", dark);
-  document.getElementById("themeButton").textContent = dark ? "☾" : "☼";
+  const icon = dark ? "☾" : "☼";
+  const btn1 = document.getElementById("themeButton");
+  const btn2 = document.getElementById("gateThemeBtn");
+  if (btn1) btn1.textContent = icon;
+  if (btn2) btn2.textContent = icon;
   try { localStorage.setItem(THEME_KEY, dark ? "dark" : "light"); } catch (_) {}
+}
+
+document.getElementById("themeButton")?.addEventListener("click", () => {
+  applyTheme(!document.body.classList.contains("dark-mode"));
 });
+
+if (gateThemeBtn) {
+  gateThemeBtn.addEventListener("click", () => {
+    applyTheme(!document.body.classList.contains("dark-mode"));
+  });
+}
 
 try {
   const savedTheme = localStorage.getItem(THEME_KEY);
   const dark = savedTheme === null ? true : savedTheme === "dark";
-  document.body.classList.toggle("dark-mode", dark);
-  document.getElementById("themeButton").textContent = dark ? "☾" : "☼";
+  applyTheme(dark);
 } catch (_) {
-  document.body.classList.add("dark-mode");
-  document.getElementById("themeButton").textContent = "☾";
+  applyTheme(true);
 }
 
 console.log("Neighbourhood Help Board loaded — powered by Firebase Realtime Database.");

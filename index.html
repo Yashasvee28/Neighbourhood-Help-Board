@@ -17,6 +17,113 @@
   <script src="script.js" defer></script>
 </head>
 <body>
+  <!-- Auth Gate Greeting Screen (Shown when opening the site) -->
+  <div id="authGate" class="auth-gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <div class="auth-gate-backdrop"></div>
+    <div class="auth-gate-wrapper">
+      <div class="auth-gate-card">
+        <!-- Close button (shown when opened manually while exploring) -->
+        <button type="button" class="gate-close hidden" id="gateCloseBtn" aria-label="Close and return to board">×</button>
+
+        <!-- Left Column: Community Branding & Highlights -->
+        <div class="gate-hero">
+          <div class="gate-brand">
+            <span class="brand-mark"><span></span><span></span><span></span><span></span></span>
+            <span class="gate-brand-name">Neighbourhood <span>Help Board</span></span>
+          </div>
+
+          <div class="gate-hero-body">
+            <div class="gate-kicker"><span class="gate-kicker-dot">✳</span> LOCAL COMMUNITY NETWORK</div>
+            <h1 class="gate-headline">Connect with people right around the corner.</h1>
+            <p class="gate-subhead">A welcoming space to lend a hand, borrow tools, share news, and look out for one another.</p>
+
+            <div class="gate-highlights">
+              <div class="gate-highlight">
+                <span class="highlight-icon">♡</span>
+                <div>
+                  <strong>Neighbour-to-neighbour</strong>
+                  <span>Ask for help or offer support to residents nearby</span>
+                </div>
+              </div>
+              <div class="gate-highlight">
+                <span class="highlight-icon">⚡</span>
+                <div>
+                  <strong>Real-time updates</strong>
+                  <span>Instant live feed for local notices, events, and lost &amp; found</span>
+                </div>
+              </div>
+              <div class="gate-highlight">
+                <span class="highlight-icon">🛡</span>
+                <div>
+                  <strong>Safe &amp; authentic</strong>
+                  <span>Protected community discussions with moderator support</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="gate-hero-foot">
+            <div class="gate-live-badge"><span class="status-dot"></span> Firebase live community</div>
+            <span>Always free for neighbours</span>
+          </div>
+        </div>
+
+        <!-- Right Column: Sign In / Create Account Form -->
+        <div class="gate-form-panel">
+          <div class="gate-form-top">
+            <span class="gate-chip">Community Access</span>
+            <button type="button" class="icon-button gate-theme-btn" id="gateThemeBtn" aria-label="Switch colour theme" title="Switch theme">☼</button>
+          </div>
+
+          <div class="gate-form-header">
+            <h2 id="gateTitle">Welcome to the neighbourhood</h2>
+            <p id="gateSubtitle">Sign in or create an account to start sharing and connecting.</p>
+          </div>
+
+          <div class="auth-tabs gate-tabs" role="tablist">
+            <button type="button" class="auth-tab active" id="gateTabLogin">Log in</button>
+            <button type="button" class="auth-tab" id="gateTabSignup">Create account</button>
+          </div>
+
+          <form id="gateForm">
+            <label class="field hidden" id="gateNameField">
+              Your name
+              <input id="gateName" name="name" maxlength="40" autocomplete="name" placeholder="e.g. Alex Morgan">
+            </label>
+
+            <label class="field">
+              Email address
+              <input id="gateEmail" name="email" type="email" maxlength="254" autocomplete="email" required placeholder="you@example.com">
+            </label>
+
+            <label class="field">
+              Password
+              <input id="gatePassword" name="password" type="password" minlength="6" autocomplete="current-password" required placeholder="At least 6 characters">
+            </label>
+
+            <p class="form-error hidden" id="gateError" role="alert"></p>
+
+            <button class="button button-primary gate-submit" id="gateSubmitBtn" type="submit">
+              <span id="gateSubmitText">Log in</span> <span>↗</span>
+            </button>
+          </form>
+
+          <div class="gate-separator">
+            <span>or</span>
+          </div>
+
+          <button type="button" class="gate-guest-button" id="gateGuestBtn">
+            Explore community board as guest <span>→</span>
+          </button>
+
+          <small class="gate-footer-note">
+            Signing in enables posting, commenting, and upvoting. Guest mode allows viewing the live board.
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="app-shell">
     <aside class="sidebar">
       <a class="brand" href="#home" aria-label="Neighbourhood Help Board home">
