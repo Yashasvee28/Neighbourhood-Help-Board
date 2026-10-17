@@ -10,6 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <!-- Firebase compat SDK (must load before script.js) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -189,7 +193,7 @@
       <p class="form-error hidden" id="authError" role="alert"></p>
       <button class="button button-primary modal-submit" id="authSubmit" type="submit">Log in ↗</button>
     </form>
-    <small class="modal-note">Use a unique password. Accounts are stored by this project's server. Email verification is not configured in this demo.</small>
+    <small class="modal-note">Use a unique password. Accounts are stored securely via Firebase Authentication.</small>
   </dialog>
 
   <dialog class="modal" id="moderatorDialog">
