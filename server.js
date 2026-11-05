@@ -211,7 +211,7 @@ function serveStatic(req, res, pathname) {
   });
 }
 
-const server = http.createServer(async (req, res) => {
+async function handleRequest(req, res) {
   let url;
   try {
     url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
@@ -395,22 +395,26 @@ const server = http.createServer(async (req, res) => {
     return sendJSON(res, 405, { error: "Method not allowed." });
   }
   return serveStatic(req, res, pathname);
-});
-
-server.listen(PORT, HOST, () => {
-  console.log(`Neighbourhood Help Board is running at http://${HOST}:${PORT}`);
-  console.log(`Health check: http://${HOST}:${PORT}/api/health`);
-  if (MODERATOR_KEY === "change-this-local-moderator-key") {
-    console.warn("SECURITY NOTE: Using the default local moderator key.");
-    console.warn("Set MODERATOR_KEY before exposing this server to other users.");
-  }
-});
-
-function shutdown() {
-  server.close(() => process.exit(0));
 }
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
 
-// Export for Vercel serverless runtime.
-module.exports = server;
+// The local development server wraps this handler
+// in a normal HTTP server so `npm start` continues to work.
+if (require.main === module) {
+  const server = http.createServer(handleRequest);
+  server.listen(PORT, HOST, () => {
+    console.log(`Neighbourhood Help Board is running at http://${HOST}:${PORT}`);
+    console.log(`Health check: http://${HOST}:${PORT}/api/health`);
+    if (MODERATOR_KEY === "change-this-local-moderator-key") {
+      console.warn("SECURITY NOTE: Using the default local moderator key.");
+      console.warn("Set MODERATOR_KEY before exposing this server to other users.");
+    }
+  });
+
+  function shutdown() {
+    server.close(() => process.exit(0));
+  }
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
+}
+
+module.exports = handleRequest;

@@ -1,11 +1,4 @@
 {
-  "version": 2,
-  "functions": {
-    "server.js": {
-      "runtime": "now-php@1.0.0"
-    }
-  },
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/server.js" }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "dist"
 }

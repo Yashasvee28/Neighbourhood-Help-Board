@@ -2,9 +2,10 @@
   "name": "neighbourhood-help-board",
   "version": "1.0.0",
   "private": true,
-  "description": "Neighbourhood Help Board with account sign-in, posts, comments, upvotes, moderation and persistent JSON storage.",
+  "description": "Neighbourhood Help Board with Firebase-backed community posts and accounts.",
   "main": "server.js",
   "scripts": {
+    "build": "node build-static.js",
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
