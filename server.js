@@ -10,7 +10,7 @@ const crypto = require("crypto");
 
 const PORT = Number(process.env.PORT) || 3000;
 const HOST = process.env.HOST || "0.0.0.0";
-const MODERATOR_KEY = process.env.MODERATOR_KEY || "change-this-local-moderator-key";
+const MODERATOR_KEY = process.env.MODERATOR_KEY || "neighbourhood2026";
 const ROOT = __dirname;
 const DATA_DIR = path.join(ROOT, "data");
 const DB_FILE = path.join(DATA_DIR, "db.json");
